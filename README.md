@@ -1,4 +1,4 @@
-# lab1-neural-network-from-scratch
+# Lab 1: Building a Neural Network using Python
 
 Welcome to Lab 1 of the Machine Learning Series.
 
