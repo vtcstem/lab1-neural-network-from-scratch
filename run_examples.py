@@ -1,8 +1,3 @@
-# VTC STEM Education Centre
-# Machine Learning Series 1: Introduction of Neural Network
-# by Oscar PANG (c) 2018 All rights reserved
-# This program is strictly for self study only
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pylab
@@ -10,9 +5,11 @@ import sklearn
 import sklearn.datasets
 import sklearn.linear_model
 import pickle
-import os.path
 import sys
+import os.path
+from argparse import ArgumentParser
 from neuralnetworkv2 import *
+
 
 def layer_size(X,Y):
     """
@@ -26,7 +23,7 @@ def layer_size(X,Y):
         n_y -- the size of the output layer
     """
     n_x=X.shape[0]
-    n_h= 4
+    n_h= 6
     n_y=Y.shape[0]
     return (n_x,n_h,n_y)
 
@@ -49,7 +46,6 @@ def load_planar_dataset():
     X = X.T
     Y = Y.T
     plt.scatter(X[0, :], X[1, :],c=Y.reshape(X[0,:].shape),  s=40, cmap=plt.cm.Spectral);
-    plt.title("Classify the blue and red data points into two groups")
 
     return X, Y
 
@@ -57,7 +53,6 @@ def load_moon_dataset():
     np.random.seed(0)
     X, Y = sklearn.datasets.make_moons(200, noise=0.20)
     plt.scatter(X[:,0], X[:,1], s=40, c=Y, cmap=plt.cm.Spectral)
-    plt.title("Classify the blue and red data points into two groups")
     return X.T, np.reshape(Y, (1, Y.shape[0]))
 
 def plot_decision_boundary(model, X, y):
@@ -76,7 +71,21 @@ def plot_decision_boundary(model, X, y):
     plt.xlabel('x1')
     plt.scatter(X[0, :], X[1, :], c=y.reshape(X[0,:].shape), cmap=plt.cm.Spectral)
 
-X, Y = load_moon_dataset()
+parser = ArgumentParser()
+parser.add_argument("--output", help="output trained weights", action="store_true")
+parser.add_argument("-d", "--dataset", help="choose dataset: moon / planar", dest="dataset", default="moon")
+parser.add_argument("-lr", "--learningrate", help="define the learning rate", dest="lr", type=float, default=0.12)
+parser.add_argument("-i", "--iteration", help="define the learning rate", dest="iter", type=int, default=20000)
+args = parser.parse_args()
+
+if str(args.dataset) == "moon":
+    X, Y = load_moon_dataset()
+    #print(args.dataset)
+elif str(args.dataset) == "planar":
+    X, Y = load_planar_dataset()
+else:
+    print("Unrecognized dataset parameter! Exit now.")
+    sys.exit(1)
 
 
 plt.show()
@@ -84,31 +93,42 @@ plt.show()
 shape_X=X.shape
 shape_Y=Y.shape
 m=X.shape[1]
-
 print("the shape of X is:"+str(shape_X))
 print("the shape of Y is:"+str(shape_Y))
 print("the training examples:" +str(m))
 
 n_x, n_h, n_y = layer_size(X,Y)
 
-# create a neural network object with size n_x (input), n_h(hidden) and n_y(output)
-nn = neuralnetwork(n_x, n_h, n_y)
+nn = neuralnetwork(n_x, n_h, n_y, learning_rate=args.lr)
 
 if os.path.isfile('nn_weights.dat'):
-    print("Found trained weights. Update neural network with the weights")
+    print("Found existing weights. Loading...")
     weights = open('nn_weights.dat', 'rb')
     nn.input(weights)
 else:
-    print("Cannot find pre-trained weights!")
-    print("To learn about triaing a neural network, come to Machine Learning Series 2 of VTC STEM Education Centre!")
-    sys.exit(1)
+    print("Train new weights using data...")
+    nn.train(X, Y, m, num_iterations = args.iter, debug = True)
 
 plot_decision_boundary(lambda x: nn.predict(x.T), X, Y)
 plt.title("Decision Boundary for hidden layer size " + str(nn.getsize()[1]))
-pylab.show()
+plt.show()
+
+
+print ('Plotting cost function over iteration')
+cost = nn.getcostlist()
+plt.plot(cost)
+plt.title("Cost function over iteration")
+plt.ylabel('cost')
+plt.xlabel('iteration')
+plt.show()
+
 
 predictions=nn.predict(X)
 print ('Accuracy: %d' % float((np.dot(Y,predictions.T) + np.dot(1-Y,1-predictions.T))/float(Y.size)*100) + '%')
 
-print("End program...")
-print("="*50)
+if args.output:
+    print ('Saving weights...')
+    nn.output()
+
+
+
