@@ -14,7 +14,7 @@ To run this lab, you have to do the folllowing:
 
 2. Complete the sigmoid activation function and forward propagation in neuralnetwork.py
 
-3. Run "python run_examples.py" using Python 2.7, 3.0 or above. Make sure the nn_weights.dat file is in the same directory.
+3. Run "python run_examples.py" in the terminal using Python 2.7, 3.0 or above. Make sure the nn_weights.dat file is in the same directory.
 
 4. If you have coded correctly, you will see the resultant classification made by this 3-layer neural network (hidden size = 4):
 
