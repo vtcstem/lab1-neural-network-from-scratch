@@ -12,9 +12,9 @@ To run this lab, you have to do the folllowing:
 
 1. Clone this repo and complete the sigmoid activation function using python and numpy in neuralnetworkv2.py
 
-2. Complete the forward propagation part in neuralnetworkv2.py
+2. Complete the sigmoid activation function and forward propagation in neuralnetwork.py
 
-3. Run "python run_examples.py" using Python 2.7, 3.0 or above
+3. Run "python run_examples.py" using Python 2.7, 3.0 or above. Make sure the nn_weights.dat file is in the same directory.
 
 4. If you have coded correctly, you will see the resultant classification made by this 3-layer neural network (hidden size = 4):
 
